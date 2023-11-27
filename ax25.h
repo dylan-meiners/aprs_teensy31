@@ -33,4 +33,6 @@ void ax25_send_string(const char * const string);
 void ax25_send_footer();
 unsigned int ax25_getPacketSize();
 
+void ax25_debug();
+
 #endif

@@ -31,6 +31,7 @@
 #include "aprs.h"
 
 #define MAXSENDBUFFER 500 // Used to allocate a static buffer on the stack to build the AX25 buffer
+uint8_t buf[MAXSENDBUFFER];
 
 uint16_t preambleFlags;
 
@@ -153,52 +154,13 @@ void aprs_setup(const uint16_t p_preambleFlags, const uint8_t pttPin,
 // begin.
 // In PTT mode the pin given will be raised high, and then PTT_DELAY ms later, the packet will
 // begin
-void aprs_send(const PathAddress * const paths, const int nPaths,
-    const uint8_t dayOfMonth, const uint8_t hour, const uint8_t min,
-    const float lat,
-    const float lon, // degrees
-    const float altitude, // meters
-    const uint16_t heading, // degrees
-    const float speed, const char symbolTableIndicator, const char symbol,
-    const char * const comment)
-{
-  uint8_t buf[MAXSENDBUFFER];
-  char temp[12];
+void aprs_send_start(const PathAddress* const paths, const int nPaths) {
+    ax25_initBuffer(buf, sizeof(buf));
 
-  ax25_initBuffer(buf, sizeof(buf));
+    ax25_send_header(paths, nPaths, preambleFlags);
+}
 
-  ax25_send_header(paths, nPaths, preambleFlags);
-
-  ax25_send_byte('/'); // Report w/ timestamp, no APRS messaging. $ = NMEA raw data
-  snprintf(temp, sizeof(temp), "%02u%02u%02uz", (unsigned int) dayOfMonth,
-      (unsigned int) hour, (unsigned int) min);
-  ax25_send_string(temp);
-
-  latToStr(temp, sizeof(temp), lat);
-  ax25_send_string(temp);             // Lat:
-
-  ax25_send_byte(symbolTableIndicator);           // Which Symbol table to use
-
-  lonToStr(temp, sizeof(temp), lon);
-  ax25_send_string(temp);     // Lon: 000deg and 25.80 min
-
-  ax25_send_byte(symbol);  // The symbol
-
-  snprintf(temp, sizeof(temp), "%03u", heading);
-  ax25_send_string(temp);             // Heading (degrees)
-
-  ax25_send_byte('/');                // and
-
-  snprintf(temp, sizeof(temp), "%03d", (unsigned int) (speed + 0.5));
-  ax25_send_string(temp);             // speed (knots)
-
-  ax25_send_string("/A="); // Altitude (feet). Goes anywhere in the comment area
-
-  snprintf(temp, sizeof(temp), "%06ld", (long) (altitude / 0.3048)); // 10000 ft = 3048 m
-  ax25_send_string(temp);
-
-  ax25_send_string(comment);     // Comment
-
+void aprs_send_end() {
   ax25_send_footer();
 
   Serial.flush(); // Make sure all Serial data (which is based on interrupts) is done before you start sending.
@@ -210,8 +172,7 @@ void aprs_send(const PathAddress * const paths, const int nPaths,
 
   // OK, no more operations until this is done.
   afsk_start();
-  while (afsk_busy())
-    ;
+  while (afsk_busy());
 
-  logBuffer(buf, ax25_getPacketSize(), dayOfMonth, hour, min);
+  //logBuffer(buf, ax25_getPacketSize(), 0, 0, 0);
 }

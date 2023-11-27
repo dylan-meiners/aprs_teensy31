@@ -37,12 +37,6 @@ void aprs_setup(const uint16_t preambleFlags, // number of preambleFlags to send
     const uint32_t toneLength, const uint32_t silenceLength // Emit sub-audio tone before packet to trigger VOX
     );
 
-void aprs_send(const PathAddress * const paths, const int nPaths,
-    const uint8_t dayOfMonth, const uint8_t hour, const uint8_t min,
-    const float lat,
-    const float lon, // degrees
-    const float altitude, // meters
-    const uint16_t heading, // degrees
-    const float speed, const char symbolTableIndicator, const char symbol,
-    const char * const comment); // Synchronized ... won't return until the entire packet is sent
+void aprs_send_start(const PathAddress * const paths, const int nPaths);
+void aprs_send_end(); // Synchronized ... won't return until the entire packet is sent
 #endif

@@ -32,6 +32,5 @@ afsk_setup(const uint8_t pttPin, // Use PTT pin, 0 = do not use PTT
 void afsk_set_buffer(const uint8_t * const buffer, const uint16_t len);
 void afsk_start();
 int afsk_busy();
-uint16_t afsk_getTxDelay();
 
 #endif

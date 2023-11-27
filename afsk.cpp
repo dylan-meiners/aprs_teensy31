@@ -172,7 +172,7 @@ inline uint16_t afsk_read_sample(const uint16_t * const sine_table,
 
 inline void afsk_output_sample(uint16_t b)
 {
-  analogWrite(A14, b);
+  analogWrite(A21, b);
 }
 
 void afsk_timer_stop()
@@ -253,7 +253,7 @@ void afsk_setup(const uint8_t p_pttPin, // Use PTT pin, 0 = do not use PTT
     const uint32_t p_toneLength, const uint32_t p_silenceLength)
 {
 
-  pttPin = p_pttPin;
+    pttPin = p_pttPin;
   pttDelay = p_pttDelay;
   toneLength = p_toneLength;
   silenceLength = p_silenceLength;
@@ -305,7 +305,7 @@ void afsk_start()
   if (pttPin) {
     // Key the radio
     // Configure pins
-    pinMode(pttPin, INPUT);
+    digitalWrite(pttPin, OUTPUT);
     delay(pttDelay);
   }
 

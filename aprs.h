@@ -25,6 +25,8 @@
 #ifndef __APRS_H__
 #define __APRS_H__
 
+#include <Arduino.h>
+
 struct PathAddress
 {
   const char *callsign;
